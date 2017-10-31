@@ -41,8 +41,8 @@ print('%i zip codes loaded' % len(zip_codes))
 print('Loading taxi fare data...')
 capstone_dir = '/Users/gdevore21/Documents/Certificate Programs/Data Science/Deriving Knowledge from Data at Scale/Capstone Project/'
 taxi_fare = pandas.read_csv(os.path.join(capstone_dir,'NYC_Taxi_2013_One_Percent_Trip.csv'))
-pickup_rows_to_swap = []
-dropoff_rows_to_swap = []
+pickup_rows_to_swap = numpy.zeros((len(taxi_fare), 1))
+dropoff_rows_to_swap = numpy.zeros((len(taxi_fare), 1))
 pickup_zip = numpy.zeros((len(taxi_fare), 1))
 pickup_dist = numpy.zeros((len(taxi_fare), 1))
 dropoff_zip = numpy.zeros((len(taxi_fare), 1))
@@ -53,11 +53,11 @@ for index, row in taxi_fare.iterrows():
     pickup_latlong = numpy.array([row['pickup_latitude'], row['pickup_longitude']])
     if pickup_latlong[0] < 0:
         pickup_latlong = numpy.flip(pickup_latlong, axis=0)
-        pickup_rows_to_swap.append(index)
+        pickup_rows_to_swap[index] = 1
     dropoff_latlong = numpy.array([row['dropoff_latitude'], row['dropoff_longitude']])
     if dropoff_latlong[0] < 0:
         dropoff_latlong = numpy.flip(dropoff_latlong, axis=0)
-        dropoff_rows_to_swap.append(index)
+        dropoff_rows_to_swap[index] = 1
     [dist, pickup_ind] = closestZIP(zip_latlong, pickup_latlong)
     pickup_dist[index] = dist
     pickup_zip[index] = zip_codes[pickup_ind]
@@ -66,19 +66,20 @@ for index, row in taxi_fare.iterrows():
     dropoff_zip[index] = zip_codes[dropoff_ind]
 
 fout = open(os.path.join(capstone_dir, 'trip_ZipCodeFeatures.csv'),'w')
-fout.write('Pickup ZIP, Dropoff ZIP, Distance to Pickup ZIP, Distance to Dropoff ZIP\n')
+fout.write('Pickup ZIP, Dropoff ZIP, Distance to Pickup ZIP, Distance to Dropoff ZIP, Swap Pickup, Swap Dropoff\n')
 for i in range(len(pickup_zip)):
-    fout.write('%i,%i,%f,%f\n' % (pickup_zip[i], dropoff_zip[i], pickup_dist[i], dropoff_dist[i]))
+    fout.write('%i,%i,%f,%f,%i,%i\n' % (pickup_zip[i], dropoff_zip[i], pickup_dist[i], dropoff_dist[i],
+                                  pickup_rows_to_swap[i], dropoff_rows_to_swap[i]))
 fout.close()
 
-fout = open(os.path.join(capstone_dir, 'pickup_rows_swap.csv'),'w')
-fout.write('Row ID\n')
-for i in range(len(pickup_rows_to_swap)):
-    fout.write('%i\n' % (pickup_rows_to_swap[i] + 1))
-fout.close()
-
-fout = open(os.path.join(capstone_dir, 'dropoff_rows_swap.csv'),'w')
-fout.write('Row ID\n')
-for i in range(len(dropoff_rows_to_swap)):
-    fout.write('%i\n' % (dropoff_rows_to_swap[i] + 1))
-fout.close()
+# fout = open(os.path.join(capstone_dir, 'pickup_rows_swap.csv'),'w')
+# fout.write('Row ID\n')
+# for i in range(len(pickup_rows_to_swap)):
+#     fout.write('%i\n' % (pickup_rows_to_swap[i] + 1))
+# fout.close()
+#
+# fout = open(os.path.join(capstone_dir, 'dropoff_rows_swap.csv'),'w')
+# fout.write('Row ID\n')
+# for i in range(len(dropoff_rows_to_swap)):
+#     fout.write('%i\n' % (dropoff_rows_to_swap[i] + 1))
+# fout.close()
