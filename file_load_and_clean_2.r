@@ -38,6 +38,26 @@ trip_and_fare$logtime <- log(trip_and_fare$trip_time_in_secs)
 head(trip_and_fare,6)
 
 
+#get cardinal directions for trip
+trip_and_fare$angle <- atan2((trip_and_fare$dropoff_latitude-trip_and_fare$pickup_latitude),(trip_and_fare$dropoff_longitude-trip_and_fare$pickup_longitude))
+trip_and_fare$angle <- ifelse(trip_and_fare$angle < 0,  2*pi+trip_and_fare$angle, trip_and_fare$angle)
+trip_and_fare$direction<-
+ifelse(trip_and_fare$angle <=1/16*pi | trip_and_fare$angle > 31/16*pi, 'E', 
+ifelse(trip_and_fare$angle <=3/16*pi, 'ENE', 
+ifelse(trip_and_fare$angle <=5/16*pi, 'NE', 
+ifelse(trip_and_fare$angle <=7/16*pi, 'NNE', 
+ifelse(trip_and_fare$angle <=9/16*pi, 'N', 
+ifelse(trip_and_fare$angle <=11/16*pi, 'NNW', 
+ifelse(trip_and_fare$angle <=13/16*pi, 'NW', 
+ifelse(trip_and_fare$angle <=15/16*pi, 'WNW', 
+ifelse(trip_and_fare$angle <=17/16*pi, 'W', 
+ifelse(trip_and_fare$angle <=19/16*pi, 'WSW', 
+ifelse(trip_and_fare$angle <=21/16*pi, 'SW', 
+ifelse(trip_and_fare$angle <=23/16*pi, 'SSW', 
+ifelse(trip_and_fare$angle <=25/16*pi, 'S', 
+ifelse(trip_and_fare$angle <=27/16*pi, 'SSE', 
+ifelse(trip_and_fare$angle <=29/16*pi, 'SE', 'ESE')))))))))))))))
+
 #plot destinations by rate code
 options(repr.plot.width=8, repr.plot.height=8)
 ggplot(trip_and_fare, aes(dropoff_longitude, dropoff_latitude)) + geom_point() +
