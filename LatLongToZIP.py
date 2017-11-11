@@ -71,15 +71,3 @@ for i in range(len(pickup_zip)):
     fout.write('%i,%i,%f,%f,%i,%i\n' % (pickup_zip[i], dropoff_zip[i], pickup_dist[i], dropoff_dist[i],
                                   pickup_rows_to_swap[i], dropoff_rows_to_swap[i]))
 fout.close()
-
-# fout = open(os.path.join(capstone_dir, 'pickup_rows_swap.csv'),'w')
-# fout.write('Row ID\n')
-# for i in range(len(pickup_rows_to_swap)):
-#     fout.write('%i\n' % (pickup_rows_to_swap[i] + 1))
-# fout.close()
-#
-# fout = open(os.path.join(capstone_dir, 'dropoff_rows_swap.csv'),'w')
-# fout.write('Row ID\n')
-# for i in range(len(dropoff_rows_to_swap)):
-#     fout.write('%i\n' % (dropoff_rows_to_swap[i] + 1))
-# fout.close()
