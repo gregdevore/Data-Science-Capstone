@@ -45,6 +45,9 @@ weather_summary <- weather_redux %>% group_by(Year,Month,Day,Hour) %>% summarise
 weather_summary$Rain <- ifelse(weather_summary$Average_Precip > 0,'YES','NO')
 temp_quant <- quantile(weather_summary$Average_Temp)
 wind_quant <- quantile(weather_summary$Average_Wind)
+# Move min to left to avoid NA's using cut function
+temp_quant['0%'] <- -1
+wind_quant['0%'] <- -1
 weather_summary$Wind <- as.character(cut(weather_summary$Average_Wind, wind_quant, 
                             labels = c('Low','Medium','Medium-High','High')))
 weather_summary$Temp <- as.character(cut(weather_summary$Average_Temp, temp_quant, 
@@ -53,7 +56,7 @@ weather_summary$Temp <- as.character(cut(weather_summary$Average_Temp, temp_quan
 # Load trip data to assign weather to each trip
 date.time.features <- read.csv('trip_DateTimeFeatures.csv')
 raining <- vector(length = nrow(date.time.features))
-windy <- character(length = nrow(date.time.features))
+wind <- character(length = nrow(date.time.features))
 temperature <- character(length = nrow(date.time.features))
 for (row in seq(nrow(weather_summary))) {
   # Find all trips occuring at each hour
@@ -62,7 +65,7 @@ for (row in seq(nrow(weather_summary))) {
                  date.time.features$pickUp_Hour == weather_summary$Hour[row])
   # Assign weather summary to those trips
   raining[idx] <- weather_summary$Rain[row]
-  windy[idx] <- weather_summary$Wind[row]
+  wind[idx] <- weather_summary$Wind[row]
   temperature[idx] <- weather_summary$Temp[row]
 }
 trip_weather <- data.frame(raining,wind,temperature)
